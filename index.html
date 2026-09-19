@@ -45,6 +45,7 @@
   </div>
 
   <form class="quote" id="quote" action="#" novalidate>
+    <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" aria-hidden="true" style="display:none">
     <h2>Get your free quote</h2>
     <p class="sub">Takes about 40 seconds. No obligation.</p>
     <fieldset>
@@ -64,7 +65,8 @@
     <label class="f">Tell us about the job (access, size, timing)<textarea name="notes" rows="3"></textarea></label>
     <button class="btn btn-y" type="submit">Send my details</button>
     <p class="fine">We'll reply the same day. No one will call to upsell you.</p>
-    <p class="thanks" hidden>Got it, thanks. We'll be in touch the same day. If it's urgent, call <a href="tel:+61438619660">0438 619 660</a>.</p>
+    <p class="err" role="alert" hidden>That didn't send. Please try again or call <a href="tel:+61438619660">0438 619 660</a>.</p>
+    <p class="thanks" role="status" hidden>Got it, thanks. We'll be in touch the same day. If it's urgent, call <a href="tel:+61438619660">0438 619 660</a>.</p>
   </form>
 </section>
 
