@@ -34,15 +34,35 @@ document.addEventListener('click', e => {
   if (m && !m.contains(e.target)) m.open = false;
 });
 
-// Quote form: opens an email to the business with the details filled in.
-// Swap this for Formspree, Netlify Forms or your own backend when ready.
+// Quote form: sends to Formspree, shows the thank-you only after a successful send.
+const ENDPOINT = 'https://formspree.io/f/xppwzvwj';
 const form = document.getElementById('quote');
-form.addEventListener('submit', e => {
+const btn = form.querySelector('button[type="submit"]');
+const thanks = form.querySelector('.thanks');
+const err = form.querySelector('.err');
+
+form.addEventListener('submit', async e => {
   e.preventDefault();
   [...form.elements].forEach(el => el.classList && el.classList.add('touched'));
   if (!form.checkValidity()) { form.reportValidity(); return; }
-  const d = Object.fromEntries(new FormData(form));
-  const body = `Service: ${d.service}\nName: ${d.name}\nSuburb: ${d.suburb}\nPhone: ${d.phone}\n\n${d.notes || ''}`;
-  window.location.href = `mailto:ozteenrubbish@gmail.com?subject=${encodeURIComponent('Quote request: ' + d.service)}&body=${encodeURIComponent(body)}`;
-  form.querySelector('.thanks').hidden = false;
+
+  thanks.hidden = true;
+  err.hidden = true;
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+
+  const data = new FormData(form);
+  data.append('_subject', 'Quote request: ' + data.get('service'));
+
+  try {
+    const res = await fetch(ENDPOINT, { method: 'POST', headers: { Accept: 'application/json' }, body: data });
+    if (!res.ok) throw new Error('Send failed');
+    form.reset();
+    form.querySelectorAll('.touched').forEach(el => el.classList.remove('touched'));
+    thanks.hidden = false;
+  } catch (_) {
+    err.hidden = false;
+  }
+  btn.disabled = false;
+  btn.textContent = 'Send my details';
 });
