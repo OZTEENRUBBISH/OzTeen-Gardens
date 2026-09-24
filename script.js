@@ -34,8 +34,9 @@ document.addEventListener('click', e => {
   if (m && !m.contains(e.target)) m.open = false;
 });
 
-// Quote form: sends to Formspree, shows the thank-you only after a successful send.
-const ENDPOINT = 'https://formspree.io/f/xppwzvwj';
+// Quote form: sends to Web3Forms, shows the thank-you only after a successful send.
+const WEB3FORMS_ACCESS_KEY = '461f0ba0-441f-448d-a5b8-a2887b7c7203';
+const ENDPOINT = 'https://api.web3forms.com/submit';
 const form = document.getElementById('quote');
 const btn = form.querySelector('button[type="submit"]');
 const thanks = form.querySelector('.thanks');
@@ -52,11 +53,17 @@ form.addEventListener('submit', async e => {
   btn.textContent = 'Sending...';
 
   const data = new FormData(form);
-  data.append('_subject', 'Quote request: ' + data.get('service'));
+  data.append('access_key', WEB3FORMS_ACCESS_KEY);
+  data.append('subject', 'Quote request: ' + data.get('service'));
 
   try {
-    const res = await fetch(ENDPOINT, { method: 'POST', headers: { Accept: 'application/json' }, body: data });
-    if (!res.ok) throw new Error('Send failed');
+    const res = await fetch(ENDPOINT, {
+      method: 'POST',
+      headers: { Accept: 'application/json' },
+      body: data
+    });
+    const result = await res.json();
+    if (!res.ok || !result.success) throw new Error('Send failed');
     form.reset();
     form.querySelectorAll('.touched').forEach(el => el.classList.remove('touched'));
     thanks.hidden = false;
